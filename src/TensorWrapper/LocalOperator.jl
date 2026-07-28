@@ -116,6 +116,7 @@ const tag2Tuple{R₁, R₂} = Tuple{NTuple{R₁, String}, NTuple{R₂, String}}
 		  fermionic::Bool
 		  strength::Ref{Number}
 		  tag::tag2Tuple{R₁,R₂}  
+		  aspace::Tuple{VectorSpace, VectorSpace}
 	 end
 
 Warpper type for local operators, the building blocks of sparse MPO. 

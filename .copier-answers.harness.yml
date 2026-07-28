@@ -1,0 +1,9 @@
+# Copier answers file; changes here are overwritten on `copier update` — modify the template instead.
+_commit: v0.4.4
+_src_path: gh:agentic-tend/copier-coding-harness
+description: A julia package for finite MPS/MPO-based computations of ground-state,
+    finite-temperature and dynamical properties.
+include_notes_local: false
+project_name: FiniteMPS.jl
+role_bindings: Exploration agent → ChatGPT; Architecture reviewer → Codex; Execution
+    agent → Codex

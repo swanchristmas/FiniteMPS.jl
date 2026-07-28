@@ -18,6 +18,7 @@ julia --project=docs/ docs/make.jl
 ## Repository navigation
 
 - [codebase.md](codebase.md) routes contributors and coding agents through the implementation, examples, tests, and public documentation.
+- [hubbard-holstein-baseline.md](hubbard-holstein-baseline.md) records the staged contract and acceptance gates for the repository's full-MPS Hubbard-Holstein reference.
 - [FiniteMPS.jl](../README.md) introduces package capabilities, installation, and user-facing examples.
 
 ## See also

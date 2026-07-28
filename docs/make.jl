@@ -34,16 +34,12 @@ makedocs(;
 )
 
 
-if haskey(ENV, "GITHUB_REF")
-	@show ENV["GITHUB_REF"]
-	branch = splitpath(ENV["GITHUB_REF"])[end]
-	if branch == "main"
-		devbranch = "main"
-		devurl = "stable"
-	elseif branch == "dev"
-		devbranch = "dev"
-		devurl = "dev"
-	end
+github_repository = get(ENV, "GITHUB_REPOSITORY", "")
+github_ref = get(ENV, "GITHUB_REF", "")
+
+if github_repository == "Qiaoyi-Li/FiniteMPS.jl" && !isempty(github_ref)
+	@show github_ref
+	devbranch, devurl = github_ref == "refs/heads/dev" ? ("dev", "dev") : ("main", "stable")
 	deploydocs(
 		repo = "github.com/Qiaoyi-Li/FiniteMPS.jl",
 		devbranch = devbranch,

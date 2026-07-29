@@ -78,7 +78,11 @@ No stage weakens an oracle or redesigns core MPS, MPO, Environment, InteractionT
 
 Stage branches push only to `origin` and target `swanchristmas/main`.
 They are not stacked, are not merged by the coding agent, and do not target `Qiaoyi-Li/main`; transient logs and blockers stay in pull-request bodies.
-The next implementation gate after this contract merges is the composite local-space stage.
+
+## Implementation map
+
+The composite local-space implementation lives in [HubbardHolstein.jl](../example/HubbardHolstein/HubbardHolstein.jl) and [LocalSpace.jl](../example/HubbardHolstein/LocalSpace.jl), with acceptance coverage in [the Hubbard-Holstein tests](../test/HubbardHolstein/runtests.jl).
+The next implementation gate after human acceptance of that stage is the Model stage.
 
 ## See also
 

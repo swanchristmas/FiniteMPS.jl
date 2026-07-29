@@ -15,10 +15,13 @@ end
      include("FreeFermion.jl")
 end
 
+@testset "Hubbard-Holstein" verbose = true begin
+     include("HubbardHolstein/runtests.jl")
+end
+
 # test multi-site interaction
 @testset "Multi-site Intr" verbose = true begin
      @testset "spinless" verbose = true include("mulsiteIntr.jl")
      @testset "spinful" verbose = true include("mulsiteIntr2.jl")
      @testset "spinful2" verbose = true include("mulsiteIntr3.jl")
 end
-

@@ -39,3 +39,9 @@ Exploration agent → ChatGPT; Architecture reviewer → Codex; Execution agent 
 - Workflow-level changes update this file first. Update [AGENTS.md](../AGENTS.md) only when executable agent behavior changes.
 - Public project explanation belongs in [docs/](../docs/), while development-process decisions belong in this directory.
 - Transient execution state belongs in issues, pull-request bodies, prompts, commits, or test failures.
+
+## Documentation Validation
+
+Routine documentation builds execute lightweight examples and render committed numerical tutorial figures.
+Long-running numerical tutorials are seeded, single-threaded validation tasks that run only when explicitly requested.
+Their build artifacts are reviewed independently and never deploy the documentation site.

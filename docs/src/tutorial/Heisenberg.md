@@ -5,10 +5,14 @@ In this section, we compute the ground-state, finite-T and dynamical properties 
 $H = J\sum_{i}S_{i} S_{i+1}$.
 Here we set $J=1$ as energy unit and use spin SU(2) symmetry.
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 using FiniteMPS
+using Random
 using CairoMakie, Statistics  # visualization
 using LsqFit: curve_fit
 using NumericalIntegration: integrate
+
+Random.seed!(1234)
 
 mkpath("figs_Heisenberg") # save figures
 
@@ -22,19 +26,23 @@ for i in 1:L-1
      addIntr!(Tree, SU2Spin.SS, (i, i+1), (false, false), 1.0; name = (:S, :S))
 end
 H = AutomataMPO(Tree)
+end # hide
 ```
 Here `SU2Spin.SS` is a predefined 2-tuple of rank-3 operators that represents the Heisenberg interaction $S_i\cdot S_j$. Next, we initialize a random state in $S_\textrm{tot}^z = 0$ sector.
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # initialize a random state in S_tot = 0 sector
 bspace = Rep[SU₂](0 => 1)
 aspace = Rep[SU₂](i => 1 for i in 0:1/2:1)
 Ψ = randMPS(fill(SU2Spin.pspace, L), vcat(bspace, fill(aspace, L-1)))
+end # hide
 ```
 Here `bspace = Rep[SU₂](0 => 1)` is the space of left boundary bond, `0` is the SU(2) quantum number of the total MPS, and `1` is the multiplicity of the trivial representation, therefore this setup indicates the total MPS is a SU(2) scalar.
 
 `aspace` is the space of bulk bonds. Note the fusion of physical space and bond space leads to a constrain due to symmetry. For example, the SU(2) quantum numbers of the bonds  exhibit a integer/half integer oscillation, as the physical space exactly shifts the bond quantum number by 1/2. Here we use a larger (with redundancy) initial bond space so that contraction of bond indices gives a non-vanished result. 
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # DMRG 
 NSweeps = 5
 Env = Environment(Ψ', H, Ψ)
@@ -44,12 +52,14 @@ for nsweep in 1:NSweeps
 	push!(lsE, info[2][1].Eg)
 end
 Eg = lsE[end]
+end # hide
 ```
 Here we first construct the tri-layer environment to store the environment tensors of the local 2-site projective Hamiltonian in MPS-based DMRG. `scalar!` method triggers full contraction of the total tri-layer tensor network thus gives the initial energy.
 
 Then we perform `NSweep` times 2-DMRG sweeping via the key function `DMRGSweep2!`, where `K = 16` is the Krylov space dimension and `trunc = truncdim(D)` is a TensorKit.jl syntax that determines the truncation scheme, i.e. keep up to `D` bond dimension. Returned `info` stores the information of a DMRG sweep and `TO` is a `TimerOutput` object contains the time usage. Here we directly extract the energy from the output information, one can also use `scalar!` again.
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # plot the energy vs nsweep
 fig = Figure(size = (480, 240))
 ax = Axis(fig[1, 1];
@@ -57,11 +67,13 @@ ax = Axis(fig[1, 1];
      ylabel = "energy per site")
 scatterlines!(ax, lsE / L) # per site
 save("figs_Heisenberg/GS_energy.png", fig)
+end # hide
 ```
 ![](./figs_Heisenberg/GS_energy.png)
 
 Then we compute the ground-state spin correlations.
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # compute spin correlations
 ObsTree = ObservableTree(L)
 for i in 1:L, j in i:L
@@ -78,6 +90,12 @@ lsSr = map(lsr) do r
 		Obs["SS"][(i, i + r)] / 3 
 	end
 end
+
+invalid_ids = findall(x -> !isfinite(x) || x <= 0, lsSr)
+isempty(invalid_ids) || error(
+	"(-1)^r S(r) must be finite and strictly positive; invalid (r, value) entries: " *
+	repr(collect(zip(lsr[invalid_ids], lsSr[invalid_ids]))),
+)
 
 # plot
 fig = Figure(size = (480, 240))
@@ -105,6 +123,7 @@ lines!(ax, exp.(lsx), exp.(model(lsx, fit.param));
 axislegend(ax; position = (0, 0))
 
 save("figs_Heisenberg/GS_Sr.png", fig)
+end # hide
 ```
 ![](./figs_Heisenberg/GS_Sr.png)
 We reproduce the algebraic decay behaver 
@@ -116,6 +135,7 @@ $$
 Now we move to the finite-temperature properties via [tanTRG](https://doi.org/10.1103/PhysRevLett.130.226502), which belongs to an imaginary-time-evolution method based on TDVP of MPO. Note we will use [CBE-TDVP](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.133.026401) to accelerate the computation.
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # define a beta list
 lsβ = vcat(2.0 .^ (-15:0), 2:16)
 lslnZ = fill(NaN, length(lsβ))
@@ -149,10 +169,12 @@ calObs!(ObsTree, ρ)
 Obs = convert(Dict, ObsTree)
 lsSM[1] = calSM(Obs)
 
+end # hide
 ```
 First we define a $\beta$ list, which determines the step length of imaginary-time cooling. [SETTN](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.95.161104) is adopted to initialize a high-temperature MPO, where `CBEAlg` indicates the algorithm to implement CBE. Currently only `NaiveCBE` is valid, where we directly find the optimal subspace via a svd (use random svd to accelerate), and the expanded bond dimension is set as `D + div(D, 4)`. `lsnoise` sets the noise applied in the first several sweeps of variational multiplication. Next we use TDVP to cool down the system.
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # TDVP cooling
 for idx in 2:length(lsβ)
 	dβ = lsβ[idx] - lsβ[idx-1]
@@ -171,6 +193,7 @@ for idx in 2:length(lsβ)
 	calObs!(ObsTree, ρ)
 	lsSM[idx] = calSM(convert(Dict, ObsTree))
 end
+end # hide
 ```
 The key function in this part is `TDVPSweep1!` that performs a single left-to-right and right-to-left 1-TDVP sweep. `GCsweep = true` indicates that a manual `GC.gc()` is called per sweep. If you suffer memory problem when using FiniteMPS.jl, the first thing to try is setting `CGsweep = true` and a stronger `GCstep = true` in the main sweeping function (e.g. `DMRGSweep1!` and `TDVPSweep1!`).
 
@@ -178,6 +201,7 @@ In each sweep, the normalization factor after an imaginary-time evolution is ext
 
 Below is a simple script for visualization, where the temperature dependence of energy $e$, specific heat $c_V$ and AFM structure factor $S(\pi, \pi)$ are shown. 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # visualization 
 
 # compute C = - ∂S / ∂lnβ
@@ -208,6 +232,7 @@ scatterlines!(ax3, 1 ./ lsβ, lsSM)
 lines!(ax3, [0.05, 1], [SM_GS, SM_GS]; color = :red)
 
 save("figs_Heisenberg/FiniteT.png", fig)
+end # hide
 ```
 ![](./figs_Heisenberg/FiniteT.png)
 From this example we see that the low-temperature limit of tanTRG does shake hands with the ground state DMRG.
@@ -217,6 +242,7 @@ In this section we will compute the ground-state dynamical spin structure factor
 $S(k,\omega) = \sum_{i = 1}^L e^{-ik(r_i-r_j)} \int_{-\infty}^\infty dt e^{i\omega t}\langle S_i^z(t)S_j^z\rangle$,
 where $j$ is chosen as a reference site. More specifically, we will use TDVP to compute $\langle S_i^z(t)S_j^z\rangle = e^{iE_gt}\langle \Psi| S_i^z |\Phi(t)\rangle$ where $|\Phi(t)\rangle = e^{-iHt}S_j^z|\Psi\rangle$.
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 lst = 0:1.0:10 # time list
 matSijt = zeros(ComplexF64, L, length(lst)) # S_{i,j_ref}(t) 
 
@@ -242,10 +268,12 @@ mul!(Φ, S_MPO, Ψ;
 	trunc = truncdim(D), GCsweep = true,
      lsnoise = [(1/4, x) for x in [0.1, 0.01, 0.001]], tol = 1e-12,
 )
+end # hide
 ```
 Note we cannot directly compute $\langle S_i^z(t)S_j^z\rangle$, as the operator $S^z$ breaks the SU(2) symmetry. Therefore, what we actually compute is $\langle S_i(t) \cdot S_j\rangle / 3$, where $S_j$ operator is a SU(2) spinor with an additional index that labels the representation space. After preparing the initial `Φ` with correct symmetry index, we call `mul!` function to perform variational multiplication. 
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # define a new ObsTree to calculate each inner product ⟨Ψ|S_i|Φ⟩
 ObsTree = ObservableTree(L)
 for i in 1:L
@@ -256,10 +284,12 @@ iso = isometry(aspace_Φ, aspace_S ⊗ aspace_Ψ)
 El = permute(iso', ((2, 1), (3,)))
 calObs!(ObsTree, Ψ, Φ; El = El)
 matSijt[:, 1] = [ObsTree.Refs["S"][(i,)][] / 3 for i in 1:L]
+end # hide
 ```
 Emphasize that the isometry to fuse the space of $S_j$ and $|\Psi\rangle$ must be considered carefully. We exactly insert a pair of isometries without changing the contraction result. One is implicitly applied in `mul!` to fuse the two additonal indices to the new one of `Φ`, and the other becomes the left boundary environment tensor `El` sent to `calObs!`. 
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # time evolution
 
 # construct the trilayer environment for TDVP 
@@ -279,10 +309,12 @@ for idx in 2:length(lst)
 		ObsTree.Refs["S"][(i,)][] / 3
 	end
 end
+end # hide
 ```
 In this part we use CBE-TDVP to perform real-time evolution of `Φ` and calculate the time-dependent spin correlations as some inner products. 
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # spatial FT
 lsk = 0:2/L:2 # unit = π
 matcoef = map([(k, i) for k in lsk, i in 1:L]) do (k, i)
@@ -312,11 +344,13 @@ for iω in 1:length(lsω)
 		matSkω[ik, iω] = 2 * integrate(lst, real.(matSkt[ik, :] .* lscoef))
 	end
 end
+end # hide
 ```
 After collecting all real-space time-dependent spin correlations, we perform FT to obtain the DSF. Note time-reversal symmetry is used in the numerical integration so that only $t>0$ data is required.
 Moreover, we multiply a parzen window function to the time domain to suppress the non-physical oscillation in frequency domain.
 
 ```@example Heisenberg
+@static if get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true" # hide
 # visualization
 fig = Figure(size = (480, 240))
 ax = Axis(fig[1, 1];
@@ -335,11 +369,10 @@ lines!(ax, lsk, lsω_upper; color = :white, linestyle = :dash)
 lines!(ax, lsk, lsω_lower; color = :white, linestyle = :dash)
 
 save("figs_Heisenberg/Skomega.png", fig)
+end # hide
 ```
 ![](./figs_Heisenberg/Skomega.png)
 The exact (thermodynamical limit) upper and lower boundaries are also shown. Our numerial results align well with them, up to the frequency resolution (FWHM $\approx 8 / t_\textrm{max}$) due to the finite evolution time $t_\textrm{max} = 10$.   
-
-
 
 
 

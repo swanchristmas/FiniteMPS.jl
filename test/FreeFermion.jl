@@ -1,5 +1,6 @@
 # use free fermion DMRG to test if the AutomataMPO works correctly
 using LinearAlgebra: eigvals
+using Random
 
 function _free_fermion_U1DMRG(Tij::Matrix{T}, a::Int64) where {T<:Union{Float64,ComplexF64}}
      @assert a in [1, 2] # 2 ways to add terms
@@ -114,6 +115,7 @@ end
 L = 6
 @testset "free fermion" verbose = true begin
      @testset "spinless(real)" begin
+          Random.seed!(1234)
           Tij = rand(L, L)
           Tij += Tij'
           Eg = _GS_free_fermion(Tij)
@@ -123,6 +125,7 @@ L = 6
      end
 
      @testset "spinless(complex)" begin
+          Random.seed!(1234)
           Tij = rand(ComplexF64, L, L)
           Tij += Tij'
           Eg = _GS_free_fermion(Tij)
@@ -132,6 +135,7 @@ L = 6
      end
 
      @testset "spinful(real)" begin
+          Random.seed!(1234)
           T₊ = rand(L, L)
           T₊ += T₊'
           T₋ = rand(L, L)
@@ -143,6 +147,7 @@ L = 6
      end
 
      @testset "spinful(complex)" begin
+          Random.seed!(1234)
           T₊ = rand(ComplexF64, L, L)
           T₊ += T₊'
           T₋ = rand(ComplexF64, L, L)

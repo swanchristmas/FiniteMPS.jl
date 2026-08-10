@@ -1,4 +1,5 @@
 using BenchmarkFreeFermions
+using Random
 
 # test DMRG and 4-site observables for free spinful fermions
 
@@ -8,6 +9,7 @@ tol = 1e-8
 duplicated = true
 
 # generate a random TB model with SU2 spin symmetry
+Random.seed!(1234)
 Tij = rand(ComplexF64, L, L)
 Tij += Tij'
 Tij = hcat(vcat(Tij, zeros(ComplexF64, L, L)), vcat(zeros(ComplexF64, L, L), Tij))
@@ -105,7 +107,6 @@ end
 		@test haskey(Obs.SB, (i, j, k, l)) && abs(Obs.SB[(i, j, k, l)] - O_ex) < tol
 	end
 end
-
 
 
 

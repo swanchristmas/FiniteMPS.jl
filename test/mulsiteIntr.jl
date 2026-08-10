@@ -1,4 +1,5 @@
 using BenchmarkFreeFermions
+using Random
 
 L = 8 # L must be even here
 D = 32
@@ -6,6 +7,7 @@ tol = 1e-8
 duplicated = true
 
 # generate a random TB model
+Random.seed!(1234)
 Tij = rand(ComplexF64, L, L)
 Tij += Tij'
 
@@ -131,6 +133,5 @@ end
 	end
 
 end
-
 
 

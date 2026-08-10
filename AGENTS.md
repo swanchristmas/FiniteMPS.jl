@@ -34,6 +34,6 @@ Contract precedes implementation; "why" precedes "how".
 
 - For package behavior, run `julia --project=. -e 'using Pkg; Pkg.test()'`.
 - For documentation changes, run `julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'` and then the default fast build with `julia --project=docs/ docs/make.jl`.
-- When changing the Hubbard or Heisenberg numerical tutorials or their static figures, also run `FINITEMPS_RUN_HEAVY_DOCS=true JULIA_NUM_THREADS=1 julia --project=docs/ docs/make.jl` and review all six generated figures before refreshing the committed copies.
+- When changing the Hubbard or Heisenberg numerical tutorials or their static figures, also run `FINITEMPS_RUN_HEAVY_DOCS=true JULIA_NUM_THREADS=4 julia --project=docs/ docs/make.jl` and review all six generated figures before refreshing the committed copies; follow the trigger and artifact-review procedure in [docs/README.md](docs/README.md).
 
 Complete work according to [delivery.md](decisions/delivery.md), including validation and reporting requirements.

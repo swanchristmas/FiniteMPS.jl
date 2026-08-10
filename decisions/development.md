@@ -42,6 +42,7 @@ Exploration agent → ChatGPT; Architecture reviewer → Codex; Execution agent 
 
 ## Documentation Validation
 
-Routine documentation builds execute lightweight examples and render committed numerical tutorial figures.
-Long-running numerical tutorials are seeded, single-threaded validation tasks that run only when explicitly requested.
-Their build artifacts are reviewed independently and never deploy the documentation site.
+Routine documentation builds execute lightweight examples and render committed numerical tutorial figures because long-running scientific calculations do not improve feedback for ordinary documentation edits.
+The numerical tutorials instead run as explicit validation tasks with a fixed seed and four Julia threads, exercising the package's task-level parallelism with a stable concurrency boundary.
+The heavy job retains a 120-minute timeout so a hang or performance regression has a bounded CI cost.
+Its build artifacts are reviewed independently and never deploy the documentation site.

@@ -36,8 +36,9 @@ makedocs(;
 
 github_repository = get(ENV, "GITHUB_REPOSITORY", "")
 github_ref = get(ENV, "GITHUB_REF", "")
+run_heavy_docs = get(ENV, "FINITEMPS_RUN_HEAVY_DOCS", "false") == "true"
 
-if github_repository == "Qiaoyi-Li/FiniteMPS.jl" && !isempty(github_ref)
+if !run_heavy_docs && github_repository == "Qiaoyi-Li/FiniteMPS.jl" && !isempty(github_ref)
 	@show github_ref
 	devbranch, devurl = github_ref == "refs/heads/dev" ? ("dev", "dev") : ("main", "stable")
 	deploydocs(

@@ -1,0 +1,31 @@
+name: Heavy Documentation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      FINITEMPS_RUN_HEAVY_DOCS: 'true'
+      JULIA_NUM_THREADS: '4'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+      - uses: julia-actions/cache@v2
+      - name: Install dependencies
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Build heavy documentation
+        run: julia --project=docs/ docs/make.jl
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: heavy-documentation-${{ github.sha }}
+          path: docs/build
+          if-no-files-found: error

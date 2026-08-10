@@ -3,6 +3,9 @@
 We use a similar tree structure for calculating observables. For instance, we first generate a random product state. 
 ```@example Observable
 using FiniteMPS
+using Random
+
+Random.seed!(1234)
 
 # construct a random MPS 
 L = 4

@@ -1,6 +1,7 @@
 using BenchmarkFreeFermions
 import LinearAlgebra.Diagonal, LinearAlgebra.det
 using Combinatorics
+using Random
 
 L = 6 # L must be even here
 D = 64 # ≥ d^(L/2)
@@ -9,6 +10,7 @@ tol4 = 1e-8
 duplicated = true
 
 # generate a random TB model
+Random.seed!(1234)
 Tij = rand(ComplexF64, L, L)
 Tij += Tij'
 

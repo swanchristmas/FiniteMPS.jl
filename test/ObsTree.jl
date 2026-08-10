@@ -1,6 +1,8 @@
 # test if ObsTree work as expected
+using Random
 
 @testset "NoSym" verbose = true begin
+	Random.seed!(1234)
 	L = 6
 	lsθ = rand(L) * 2π
 	lsSz = map(x -> (cos(x)^2 - sin(x)^2) / 2, lsθ)
@@ -60,5 +62,4 @@
 	end
 
 end
-
 

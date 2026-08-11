@@ -114,6 +114,8 @@ _swap(A::LocalOperator{1, 1}, B::LocalOperator{1, 2}) = B, A
 _swap(A::LocalOperator{1, 2}, B::LocalOperator{1, 1}) = B, A
 _swap(A::LocalOperator{2, 1}, B::LocalOperator{1, 1}) = B, A
 _swap(A::LocalOperator{1, 1}, B::LocalOperator{2, 1}) = B, A
+_swap(A::LocalOperator{1, 1}, B::LocalOperator{2, 2}) = B, A
+_swap(A::LocalOperator{2, 2}, B::LocalOperator{1, 1}) = B, A
 function _swap(A::LocalOperator{1, 2}, B::LocalOperator{2, 1})
 	return _swapOp(B), _swapOp(A)
 end

@@ -446,6 +446,24 @@ function *(A::LocalOperator{2, 2}, B::LocalOperator{2, 2})
 	fermionic = A.fermionic ⊻ B.fermionic
 	return LocalOperator(O, A.name * B.name, A.si, fermionic, tag; aspace = aspace)
 end
+function *(A::LocalOperator{2, 2}, B::LocalOperator{1, 1})
+	@assert A.si == B.si && isnan(A.strength[]) && isnan(B.strength[])
+	# contract the physical legs only, keep the horizontal bond through A
+	@tensor O[a b; e d] := A.A[a b c d] * B.A[c e]
+	tag = (A.tag[1], (B.tag[2][1], A.tag[2][2]))
+	fermionic = A.fermionic ⊻ B.fermionic
+	aspace = (getLeftSpace(A), getRightSpace(A))
+	return LocalOperator(O, A.name * B.name, A.si, fermionic, tag; aspace = aspace)
+end
+function *(A::LocalOperator{1, 1}, B::LocalOperator{2, 2})
+	@assert A.si == B.si && isnan(A.strength[]) && isnan(B.strength[])
+	# contract the physical legs only, keep the horizontal bond through B
+	@tensor O[b a; d e] := A.A[a c] * B.A[b c d e]
+	tag = ((B.tag[1][1], A.tag[1][1]), B.tag[2])
+	fermionic = A.fermionic ⊻ B.fermionic
+	aspace = (getLeftSpace(B), getRightSpace(B))
+	return LocalOperator(O, A.name * B.name, A.si, fermionic, tag; aspace = aspace)
+end
 
 function _swapOp(obj::LocalOperator{R₁, R₂}) where {R₁, R₂}
 	perms = (((R₁+2:R₁+R₂)..., R₁), (R₁ + 1, (1:R₁-1)...))

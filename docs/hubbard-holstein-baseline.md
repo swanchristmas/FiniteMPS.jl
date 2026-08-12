@@ -95,5 +95,5 @@ Local-space implementation changes require prior acceptance of this contract, an
 
 - [Documentation map](README.md) defines the `docs/` directory boundary.
 - [Codebase map](codebase.md) routes implementation and test discovery.
-- [Testing policy](../decisions/testing-policy.md) defines acceptable evidence.
-- [Delivery policy](../decisions/delivery.md) defines repository actions and completion reporting.
+- [Repository agent contract](../AGENTS.md) routes validation for this example.
+- [FiniteMPS fork skill](../.agents/skills/finite-mps-fork/SKILL.md) owns fork synchronization and upstream-contribution delivery.

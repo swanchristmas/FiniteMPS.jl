@@ -1,0 +1,4 @@
+interface:
+  display_name: "FiniteMPS Fork"
+  short_description: "Synchronize and contribute through the FiniteMPS fork"
+  default_prompt: "Use $finite-mps-fork to synchronize an upstream release tag into this fork without losing merge ancestry."

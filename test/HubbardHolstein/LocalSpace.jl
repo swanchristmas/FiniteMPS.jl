@@ -7,6 +7,8 @@ function _boson_top_projector(site_space)
 end
 
 @testset "alternating local spaces" begin
+    @test_throws MethodError HubbardHolstein.local_space(true)
+    @test_throws MethodError HubbardHolstein.local_space(Int32(1))
     @test_throws DomainError HubbardHolstein.local_space(-1)
 
     @testset "nmax = $nmax" for nmax in (0, 1, 3)

@@ -1,21 +1,20 @@
 """
-    local_space(nmax::Integer) -> NamedTuple
+    local_space(nmax::Int) -> NamedTuple
 
 Construct the separate electron and truncated-phonon local spaces used by the
 repo-private alternating-site Hubbard-Holstein example. The phonon
 multiplicity basis is ordered as `|0⟩, ..., |nmax⟩`.
 """
-function local_space(nmax::Integer)
+function local_space(nmax::Int)
     nmax < 0 && throw(DomainError(nmax, "nmax must be non-negative"))
 
-    cutoff = Int(nmax)
-    db = cutoff + 1
+    db = nmax + 1
     electron_space = U1SU2Fermion.pspace
     boson_space = Rep[U₁×SU₂]((0, 0) => db)
 
     b = TensorMap(zeros, Float64, boson_space, boson_space)
     b_block = block(b, Irrep[U₁×SU₂](0, 0))
-    for occupation in 1:cutoff
+    for occupation in 1:nmax
         b_block[occupation, occupation + 1] = sqrt(occupation)
     end
     bdag = adjoint(b)
@@ -23,7 +22,7 @@ function local_space(nmax::Integer)
     x = b + bdag
 
     return (;
-        nmax = cutoff,
+        nmax,
         db,
         electron_space,
         boson_space,

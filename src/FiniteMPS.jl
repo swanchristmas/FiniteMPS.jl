@@ -61,6 +61,7 @@ include("MPO/MPO.jl")
 # Sparse MPO
 export SparseMPO, issparse
 include("SparseMPO/SparseMPO.jl")
+include("SparseMPO/mul.jl")
 
 # Environment
 export AbstractEnvironment, SimpleEnvironment, SparseEnvironment, Environment, initialize!, pushleft!, pushright!, canonicalize!, free!, scalar!, connection!, absorb!

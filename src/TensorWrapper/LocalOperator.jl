@@ -299,7 +299,7 @@ function *(O::LocalOperator{R₁, R₂}, A::MPSTensor{R₃}) where {R₁, R₂, 
 	return MPSTensor(OA)
 end
 
-# node we only apply * in addIntr..., hence we assert A.strength == B.strength == NaN 
+# note we only apply * in addIntr..., hence we assert A.strength == B.strength == NaN 
 """
 	 *(A::LocalOperator{R₁, R₂}, B::LocalOperator{R₃,R₄}) -> ::LocalOperator{R₁ + R₃ - 1, R₂ + R₄ - 1}
 

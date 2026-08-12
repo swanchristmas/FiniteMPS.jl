@@ -33,4 +33,4 @@ Before changing behavior, confirm the relevant contract in current source, tests
 
 - [Documentation map](README.md) explains the `docs/` directory.
 - [Project README](../README.md) gives the package overview and installation path.
-- [Development decisions](../decisions/README.md) record workflow and maintenance contracts.
+- [Hubbard-Holstein baseline](hubbard-holstein-baseline.md) owns the alternating-site example contract and staged acceptance gates.

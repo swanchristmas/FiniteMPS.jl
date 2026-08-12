@@ -1,39 +1,16 @@
 # AGENTS.md
 
-This file is the executable contract boundary for local coding agents: keep only rules that constrain read/change/decision/verification behavior, and move project facts, rationale, and plans elsewhere.
+FiniteMPS.jl is a Julia 1.11 package for finite MPS/MPO calculations built on TensorKit.
 
-## Context precedence
+## Project context
 
-When instructions conflict, follow this priority: user prompt > AGENTS.md > local code comments > repository docs, and report back the mismatch.
+- Read the [codebase map](docs/codebase.md) before changing implementation, examples, tests, or public documentation, then verify its route against the current source.
+- Read the [Hubbard-Holstein baseline](docs/hubbard-holstein-baseline.md) before changing that example or its staged acceptance contracts.
+- Use [`finite-mps-fork`](.agents/skills/finite-mps-fork/SKILL.md) when synchronizing an upstream release tag, checking fork divergence, preserving upstream ancestry, or preparing a contribution to `Qiaoyi-Li/FiniteMPS.jl`.
 
-## Project governance
-
-Read the relevant durable contract before working in its area:
-
-- [development.md](decisions/development.md): roles, uncertainty routing, and workflow change control;
-- [implementation-policy.md](decisions/implementation-policy.md): topology evolution, complexity boundaries, and redesign evidence;
-- [testing-policy.md](decisions/testing-policy.md): public behavior and independent acceptance evidence;
-- [documentation-style.md](decisions/documentation-style.md): documentation ownership and authoring rules;
-- [delivery.md](decisions/delivery.md): completion, validation, reporting, and repository actions.
-
-Do not modify project scope, dependencies, or public contracts without explicit maintainer approval.
-
-## Project orientation
-
-Read the [codebase map](docs/codebase.md) to locate implementation, examples, tests, and public documentation before changing code, then verify its guidance against the current source and tests.
-
-## Core boundaries
-
-Contract precedes implementation; "why" precedes "how".
-
-- do not weaken tests, oracles, or acceptance thresholds to make an implementation pass;
-- the diff is limited to the requested scope;
-- do not commit, push, or open pull requests unless explicitly requested.
-
-## Validation
+## Validation routing
 
 - For package behavior, run `julia --project=. -e 'using Pkg; Pkg.test()'`.
-- For documentation changes, run `julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'` and then the default fast build with `julia --project=docs/ docs/make.jl`.
-- When changing the Hubbard or Heisenberg numerical tutorials or their static figures, also run `FINITEMPS_RUN_HEAVY_DOCS=true JULIA_NUM_THREADS=4 julia --project=docs/ docs/make.jl` and review all six generated figures before refreshing the committed copies; follow the trigger and artifact-review procedure in [docs/README.md](docs/README.md).
-
-Complete work according to [delivery.md](decisions/delivery.md), including validation and reporting requirements.
+- For documentation changes, install the documentation environment with `julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'`, then run the default fast build with `julia --project=docs/ docs/make.jl`.
+- When changing the Hubbard or Heisenberg numerical tutorials, their static figures, numerical dependencies, or heavy-workflow behavior, also run `FINITEMPS_RUN_HEAVY_DOCS=true JULIA_NUM_THREADS=4 julia --project=docs/ docs/make.jl` and review all six generated figures.
+- Follow the fast/heavy triggers, artifact procedure, and 120-minute workflow boundary in [the documentation contract](docs/README.md).

@@ -5,21 +5,20 @@ Construct the separate electron and truncated-phonon local spaces used by the
 repo-private alternating-site Hubbard-Holstein example. The phonon
 multiplicity basis is ordered as `|0⟩, ..., |nmax⟩`.
 
-`nmax` may use any non-Boolean integer representation. It must be non-negative,
-and its successor must be representable in the same integer type.
+`nmax` may use any non-Boolean integer representation and must be non-negative.
 """
 function local_space(nmax::Integer)
     nmax isa Bool && throw(ArgumentError("nmax must be a non-Boolean integer cutoff"))
     nmax < zero(nmax) && throw(DomainError(nmax, "nmax must be non-negative"))
 
-    db = Base.Checked.checked_add(nmax, oneunit(nmax))
+    db = nmax + 1
     electron_space = U1SU2Fermion.pspace
     boson_space = Rep[U₁×SU₂]((0, 0) => db)
 
     b = TensorMap(zeros, Float64, boson_space, boson_space)
     b_block = block(b, Irrep[U₁×SU₂](0, 0))
-    for occupation in oneunit(nmax):nmax
-        b_block[occupation, occupation + oneunit(occupation)] = sqrt(occupation)
+    for occupation in 1:nmax
+        b_block[occupation, occupation + 1] = sqrt(occupation)
     end
     bdag = adjoint(b)
     nb = bdag * b

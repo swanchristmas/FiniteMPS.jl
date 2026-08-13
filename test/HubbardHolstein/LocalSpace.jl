@@ -12,9 +12,6 @@ end
     )
     @test_throws DomainError HubbardHolstein.local_space(-1)
     @test_throws MethodError HubbardHolstein.local_space(1.0)
-    @test_throws OverflowError HubbardHolstein.local_space(typemax(Int8))
-    @test_throws OverflowError HubbardHolstein.local_space(typemax(UInt8))
-
     @testset "cutoff representation $(typeof(nmax))" for nmax in (
         Int32(1),
         Int64(1),
@@ -25,8 +22,7 @@ end
         site_space = HubbardHolstein.local_space(nmax)
         @test site_space.nmax == nmax
         @test typeof(site_space.nmax) === typeof(nmax)
-        @test site_space.db == nmax + oneunit(nmax)
-        @test typeof(site_space.db) === typeof(nmax)
+        @test site_space.db == nmax + 1
         @test dim(site_space.boson_space) == 2
     end
 

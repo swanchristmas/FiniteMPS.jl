@@ -3,6 +3,10 @@ using FiniteMPS
 
 FiniteMPS.set_num_threads_mkl(1)
 
+@testset "Local spaces" verbose = true begin
+	include("Fermion.jl")
+end
+
 @testset "replace TensorKit" verbose = true begin
      include("replaced.jl")
 end

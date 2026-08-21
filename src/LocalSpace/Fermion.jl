@@ -18,6 +18,9 @@ Rank-`2` particle number operator `n = n↑ + n↓`.
 	 nd::TensorMap
 Rank-`2` double occupancy operator `nd = n↑n↓`.
 
+	 ne::TensorMap
+Rank-`2` empty occupancy operator `ne = (1 - n↑)(1 - n↓)`.
+
 	 SS::NTuple{2, TensorMap}
 Two rank-`3` operators of Heisenberg `S⋅S` interaction.
 
@@ -29,6 +32,9 @@ Thus define `SSS` as the imaginary part of S⋅(S×S) to reduce the computationa
 
 	 FdagF::NTuple{2, TensorMap}
 Two rank-`3` operators of hopping `c↑^dag c↑ + c↓^dag c↓`. 
+
+	 FdagProjF::NTuple{4, TensorMap}
+Four rank-`3` occupancy-resolved components of `FdagF`. Let `Πₙ` denote the projector onto the onsite sector with `n` fermions. The tuple is ordered as `(Π₁F†Π₀, Π₀FΠ₁, Π₂F†Π₁, Π₁FΠ₂)`, corresponding to `|1⟩⟨0|`, `|0⟩⟨1|`, `|2⟩⟨1|`, and `|1⟩⟨2|`. The creation and annihilation components respectively sum to `FdagF[1]` and `FdagF[2]`.
 
 	 FFdag::NTuple{2, TensorMap}
 Two rank-`3` operators of hopping `c↑ c↑^dag + c↓ c↓^dag`. 
@@ -69,6 +75,12 @@ const nd = let
 	nd
 end
 
+const ne = let
+	ne = TensorMap(zeros, pspace, pspace)
+	block(ne, Irrep[U₁×SU₂](-1, 0)) .= 1
+	ne
+end
+
 # S⋅S interaction
 const SS = let
 	aspace = Rep[U₁×SU₂]((0, 1) => 1)
@@ -100,6 +112,18 @@ const FdagF = let
 	block(F, Irrep[U₁×SU₂](1, 0)) .= sqrt(2)
 
 	Fdag, F
+end
+
+const FdagProjF = let
+	Fdag10 = copy(FdagF[1])
+	block(Fdag10, Irrep[U₁×SU₂](1, 0)) .= 0
+	F01 = copy(FdagF[2])
+	block(F01, Irrep[U₁×SU₂](1, 0)) .= 0
+	Fdag21 = copy(FdagF[1])
+	block(Fdag21, Irrep[U₁×SU₂](0, 1 / 2)) .= 0
+	F12 = copy(FdagF[2])
+	block(F12, Irrep[U₁×SU₂](0, 1 / 2)) .= 0
+	Fdag10, F01, Fdag21, F12
 end
 
 # hopping term, FFdag
@@ -442,4 +466,3 @@ end
 	 const U1U1Fermion = U₁U₁Fermion
 """
 const U1U1Fermion = U₁U₁Fermion
-
